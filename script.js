@@ -1,4 +1,5 @@
 const items = document.querySelector('.items');
+const cart = document.querySelector('.cart__items');
 
 const createProductImageElement = (imageSource) => {
   const img = document.createElement('img');
@@ -45,11 +46,24 @@ const showProducts = async () => {
   const { results } = await data;
   results.forEach(({ id, title, thumbnail }) => {
     const param = { sku: id, name: title, image: thumbnail };
-    const section = createProductItemElement(param);
-    items.appendChild(section);
+    const addProduct = createProductItemElement(param);
+    items.appendChild(addProduct);
   });
 };
 
 window.onload = async () => { 
   await showProducts();
+
+  const btn = document.querySelectorAll('.item__add');
+  btn.forEach((element) => {
+    element.addEventListener('click', (event) => {
+      const itemID = getSkuFromProductItem(event.path[1]);
+      fetchItem(itemID)
+        .then(({ id: sku, title: name, price: salePrice }) => {
+          const param = { sku, name, salePrice };
+          const addProductCart = createCartItemElement(param);
+          cart.appendChild(addProductCart);
+        });
+    });
+  });
 };
