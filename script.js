@@ -1,6 +1,5 @@
 const items = document.querySelector('.items');
 const cart = document.querySelector('.cart__items');
-const cartSection = document.querySelector('.cart');
 const itemCart = document.querySelectorAll('.cart__items');
 const emptyBtn = document.querySelector('.empty-cart');
 
