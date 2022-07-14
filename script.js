@@ -105,12 +105,6 @@ function cartAddProduct() {
   saveCartItems(cart.innerHTML);
 }
 
-const priceTotal = () => {
-  const preco = [];
-  const cartItems = document.querySelectorAll('.cart__item');
-  console.log(cartItems);
-};
-
 emptyBtn.addEventListener('click', () => { cart.innerHTML = ''; });
 
 window.onload = async () => { 
