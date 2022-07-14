@@ -2,6 +2,7 @@ const items = document.querySelector('.items');
 const cart = document.querySelector('.cart__items');
 const itemCart = document.querySelectorAll('.cart__items');
 const emptyBtn = document.querySelector('.empty-cart');
+const totalPriceElement = document.querySelector('.total-price');
 
 function loading() {
   const p = document.createElement('p');
@@ -43,12 +44,9 @@ const createProductItemElement = ({ sku, name, image }) => {
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
-function cartItemClickListener() {
-  itemCart.forEach((element) => {
-    element.addEventListener('click', ({ target }) => {
-      target.remove();
-    });
-  });
+function cartItemClickListener({ target }) {
+  target.remove();
+  saveCartItems(cart.innerHTML);
 }
 
 const createCartItemElement = ({ sku, name, salePrice }) => {
@@ -71,21 +69,47 @@ const showProducts = async () => {
   });
 };
 
+function sum(total, num) {
+  return total + num;
+}
+
+// const subPriceTotal = () => {
+//   const preco = [];
+//   cartItems.forEach((element) => {
+//     element.addEventListener('click', (event) => {
+
+//       fetchItem(id)
+//         .then(({ price }) => {
+//           preco.push(price);
+//           totalPriceElement.innerText = preco.reduce(sum);
+//         });
+//     });
+//   });
+// };
+
 function cartAddProduct() {
   const btn = document.querySelectorAll('.item__add');
+  
   btn.forEach((element) => {
     element.addEventListener('click', (event) => {
+      // 
       const itemID = getSkuFromProductItem(event.path[1]);
-
+      
       fetchItem(itemID)
         .then(({ id: sku, title: name, price: salePrice }) => {
-          const param = { sku, name, salePrice };
-          const addProductCart = createCartItemElement(param);
+          const addProductCart = createCartItemElement({ sku, name, salePrice });
           cart.appendChild(addProductCart);
         });
     });
   });
+  saveCartItems(cart.innerHTML);
 }
+
+const priceTotal = () => {
+  const preco = [];
+  const cartItems = document.querySelectorAll('.cart__item');
+  console.log(cartItems);
+};
 
 emptyBtn.addEventListener('click', () => { cart.innerHTML = ''; });
 
@@ -93,7 +117,7 @@ window.onload = async () => {
   await showProducts();
   cartAddProduct();
   cartItemClickListener();
-  clearCart();
   loading();
   removeload();
+  priceTotal();
 };
