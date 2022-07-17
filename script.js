@@ -1,6 +1,5 @@
 const items = document.querySelector('.items');
 const cart = document.querySelector('.cart__items');
-const itemCart = document.querySelectorAll('.cart__items');
 const emptyBtn = document.querySelector('.empty-cart');
 const totalPriceElement = document.querySelector('.total-price');
 
@@ -43,6 +42,12 @@ const createProductItemElement = ({ sku, name, image }) => {
 };
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
+
+function removePrice(param) {
+  const actualPrice = totalPriceElement.innerText;
+  const sub = actualPrice - param;
+  totalPriceElement.innerText = sub;
+}
 
 function cartItemClickListener(event) {
   const { target } = event;
@@ -116,12 +121,6 @@ emptyBtn.addEventListener('click', () => {
   cart.innerHTML = ''; 
   totalPriceElement.innerText = 0;
 });
-
-function removePrice(param) {
-  const actualPrice = totalPriceElement.innerText;
-  const sub = actualPrice - param;
-  totalPriceElement.innerText = sub;
-}
 
 window.onload = async () => { 
   await showProducts();
