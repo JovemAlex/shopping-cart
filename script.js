@@ -44,8 +44,11 @@ const createProductItemElement = ({ sku, name, image }) => {
 
 const getSkuFromProductItem = (item) => item.querySelector('span.item__sku').innerText;
 
-function cartItemClickListener({ target }) {
+function cartItemClickListener(event) {
+  const { target } = event;
+  const priceProduct = target.innerText.split('$')[1];
   target.remove();
+  removePrice(priceProduct);
   saveCartItems(cart.innerHTML);
 }
 
@@ -69,43 +72,56 @@ const showProducts = async () => {
   });
 };
 
-function sum(total, num) {
-  return total + num;
+async function addPrice(param) {
+  totalPriceElement.innerText = param;
 }
 
-// const subPriceTotal = () => {
-//   const preco = [];
-//   cartItems.forEach((element) => {
-//     element.addEventListener('click', (event) => {
+async function priceTotal() {
+  let FINAL_PRICE = 0;
+  const PRICE = [];
+  const itemsCart = document.querySelectorAll('li.cart__item');
+  itemsCart.forEach((item) => {
+    const price = item.innerText.split('$')[1];
+    PRICE.push(parseFloat(price));
+  });
+  PRICE.reduce((item, acc) => {
+    const soma = item + acc;
+    FINAL_PRICE = soma;
+    return FINAL_PRICE;
+  }, 0);
+  await addPrice(FINAL_PRICE);
+}
 
-//       fetchItem(id)
-//         .then(({ price }) => {
-//           preco.push(price);
-//           totalPriceElement.innerText = preco.reduce(sum);
-//         });
-//     });
-//   });
-// };
+async function createElementCart(param) {
+  const item = await fetchItem(param);
+  const { id, title, price } = await item;
+  const addToCart = createCartItemElement({ sku: id, name: title, salePrice: price });
+  cart.appendChild(addToCart);
+  await priceTotal();
+}
 
 function cartAddProduct() {
   const btn = document.querySelectorAll('.item__add');
   
   btn.forEach((element) => {
-    element.addEventListener('click', (event) => {
-      // 
+    element.addEventListener('click', async (event) => {
       const itemID = getSkuFromProductItem(event.path[1]);
-      
-      fetchItem(itemID)
-        .then(({ id: sku, title: name, price: salePrice }) => {
-          const addProductCart = createCartItemElement({ sku, name, salePrice });
-          cart.appendChild(addProductCart);
-        });
+      await createElementCart(itemID);
+      await subPrice();
     });
   });
-  saveCartItems(cart.innerHTML);
 }
 
-emptyBtn.addEventListener('click', () => { cart.innerHTML = ''; });
+emptyBtn.addEventListener('click', () => { 
+  cart.innerHTML = ''; 
+  totalPriceElement.innerText = 0;
+});
+
+function removePrice(param) {
+  const actualPrice = totalPriceElement.innerText;
+  const sub = actualPrice - param;
+  totalPriceElement.innerText = sub;
+}
 
 window.onload = async () => { 
   await showProducts();
@@ -113,5 +129,6 @@ window.onload = async () => {
   cartItemClickListener();
   loading();
   removeload();
-  priceTotal();
+  // priceTotal();
+  // cart.innerHTML = 
 };
